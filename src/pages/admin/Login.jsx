@@ -28,10 +28,7 @@ export default function AdminLogin() {
   return (
     <div
       className="min-h-screen grid place-items-center relative bg-cover bg-center px-4"
-      style={{
-        backgroundImage:
-          "url('https://images.unsplash.com/photo-1607779097040-26e80aa78e66?auto=format&fit=crop&w=1400&q=80')",
-      }}
+      style={{ backgroundImage: "url('/salon.avif')" }}
     >
       <div className="absolute inset-0 bg-navy/70" />
       <div className="relative w-full max-w-sm bg-white border border-slate-100 rounded-xl shadow-card p-6">

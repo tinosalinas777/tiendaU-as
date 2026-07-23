@@ -56,10 +56,10 @@ Las políticas ya incluidas dejan:
   variables `v_free_shipping_threshold` y `v_delivery_fee`) para que lo que se le
   cobra al cliente coincida con lo que muestra la pantalla.
 - `src/components/Hero.jsx`, `src/components/Benefits.jsx`,
-  `src/pages/admin/Login.jsx`: usan fotos de stock de Unsplash (libres para uso
-  comercial) como placeholder. Reemplazalas por fotos propias de tu local o
-  productos cuando las tengas — poné el archivo en `/public` y cambiá la URL por
-  la ruta local (ej. `/mi-foto.jpg`).
+  `src/pages/admin/Login.jsx`: usan tus propias fotos, guardadas en `/public`
+  (`hero.avif`, `salon.avif`, `originales.avif`, `pagos.avif`, `atencion.avif`).
+  Si en algún momento las querés cambiar, subí el archivo nuevo a `/public` y
+  actualizá el nombre en el componente correspondiente.
 
 ## 4. Deploy en Vercel
 
@@ -146,10 +146,12 @@ URL temporal de Vercel (`algo.vercel.app`) el sitio funciona igual, pero convien
 un dominio propio para SEO.
 
 > ⚠️ Importante sobre `og:image`: tiene que ser una URL absoluta (empezar con
-> `https://`) para que WhatsApp la pueda descargar. Ahora mismo apunta a una foto
-> de stock; cuando tengas fotos propias, subí una imagen de 1200x630px a
-> `/public/og-image.jpg` y cambiá la URL en `index.html` por
-> `https://TU-DOMINIO.com/og-image.jpg`.
+> `https://`) para que WhatsApp la pueda descargar. `public/og-image.jpg` ya
+> es tu foto real del hero (1200x630, generada a partir de `hero.avif`) —
+> solo falta reemplazar `TU-DOMINIO.com` por tu dominio final en `index.html`.
+> Si en algún momento cambiás la foto del hero, volvé a generar esta versión
+> JPG de 1200x630 (los rastreadores de WhatsApp/Facebook no siempre leen bien
+> AVIF todavía, por eso esta imagen puntual se guarda aparte en JPG).
 
 Para probar cómo se ve la vista previa antes de compartirlo de verdad, podés usar
 el [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/) (WhatsApp
