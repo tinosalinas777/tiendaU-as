@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Reemplazá TU-DOMINIO.com por tu dominio real. Como esta tienda es una
+  SPA (React), este sitemap lista las páginas fijas; los productos
+  individuales (/producto/:id) Google los va a encontrar solos siguiendo
+  los links desde /tienda, pero si querés que se indexen más rápido podés
+  agregarlos acá a mano (una <url> por producto).
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://TU-DOMINIO.com/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://TU-DOMINIO.com/tienda</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://TU-DOMINIO.com/contacto</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+</urlset>
