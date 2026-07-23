@@ -148,18 +148,16 @@ vista previa de WhatsApp otra vez.
 > ⚠️ Importante sobre `og:image`: tiene que ser una URL absoluta (empezar con
 > `https://`) para que WhatsApp la pueda descargar. `public/og-image.jpg` ya
 > es tu foto real del hero (1200x630, generada a partir de `hero.avif`).
-> Si en algún momento cambiás la foto del hero, volvé a generar esta versión
-> JPG de 1200x630 (los rastreadores de WhatsApp/Facebook no siempre leen bien
-> AVIF todavía, por eso esta imagen puntual se guarda aparte en JPG).
->
-> Si cambiaste algo de esto y la vista previa de WhatsApp te sigue sin
-> aparecer, probablemente sea WhatsApp mostrando una versión vieja en caché
-> del link: probá primero en el
-> [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/)
-> pegando tu URL y usando "Scrape Again" para forzarlo a releer los tags
-> actuales, y después probá compartir el link en un chat nuevo (a un chat
-> donde ya lo compartiste antes, WhatsApp a veces le sigue mostrando la
-> vista previa vieja).
+> **Si Facebook Sharing Debugger muestra bien la vista previa pero en WhatsApp
+> igual no aparece:** revisá el "Código de respuesta" que muestra el debugger.
+> Si dice **206** (contenido parcial) en vez de 200, es un problema conocido
+> de Vercel: por default sirve respuestas parciales cuando un bot pide solo
+> un rango de bytes, y el rastreador de WhatsApp (a diferencia del de
+> Facebook) no arma la vista previa con una respuesta 206. El `vercel.json`
+> de este proyecto ya incluye una cabecera (`Accept-Ranges: none`) que
+> fuerza siempre una respuesta completa (200) y soluciona esto — si de
+> todos modos te sigue pasando, probá compartiendo la URL con un parámetro
+> nuevo al final (ej. `?v=2`) para evitar la caché vieja de WhatsApp.
 
 Para probar cómo se ve la vista previa antes de compartirlo de verdad, podés usar
 el [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/) (WhatsApp
