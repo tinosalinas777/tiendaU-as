@@ -1,7 +1,7 @@
 export default function TopBar() {
   const items = [
     { icon: '📦', text: 'Envío a todo el país' },
-    { icon: '💳', text: 'Pagás con tarjeta, transferencia o efectivo' },
+    { icon: '💳', text: 'Pagás por transferencia o Mercado Pago' },
     { icon: '✨', text: 'Productos originales y de calidad profesional' },
   ]
   return (

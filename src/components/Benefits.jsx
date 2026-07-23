@@ -13,7 +13,7 @@ const benefits = [
   {
     image: "/pagos.avif",
     title: "Varios medios de pago",
-    text: "Tarjeta, transferencia o efectivo",
+    text: "Transferencia o Mercado Pago",
   },
   {
     image: "/atencion.avif",

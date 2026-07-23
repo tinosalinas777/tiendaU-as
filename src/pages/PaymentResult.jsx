@@ -9,7 +9,7 @@ const CONTENT = {
   failure: {
     icon: '❌',
     title: 'El pago no se pudo procesar',
-    text: 'Algo falló al intentar cobrar. Podés volver al carrito e intentar de nuevo, o elegir pagar en efectivo al recibir.',
+    text: 'Algo falló al intentar cobrar. Podés volver al carrito e intentar de nuevo, o elegir pagar por transferencia.',
   },
   pending: {
     icon: '⏳',

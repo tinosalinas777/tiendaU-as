@@ -229,7 +229,7 @@ lleva directo a `/admin`.
 
 ## 10. Integrar Mercado Pago
 
-El checkout deja elegir entre **efectivo/transferencia** (se confirma por WhatsApp)
+El checkout deja elegir entre **transferencia** (se confirma por WhatsApp)
 o **Mercado Pago** (Checkout Pro: el cliente paga con tarjeta, débito o dinero en
 cuenta y vuelve a la tienda). El cobro se procesa con dos funciones serverless en
 `/api`, así el access token nunca queda expuesto en el navegador.

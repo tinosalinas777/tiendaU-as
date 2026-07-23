@@ -59,7 +59,7 @@ create table if not exists orders (
   customer_phone text not null,
   delivery_address text not null,
   notes text,
-  payment_method text not null default 'efectivo', -- efectivo | transferencia | mercadopago
+  payment_method text not null default 'transferencia', -- transferencia | mercadopago
   payment_status text not null default 'no_aplica', -- no_aplica | pendiente | aprobado | rechazado
   mp_payment_id text,
   mp_preference_id text,
@@ -317,7 +317,7 @@ begin
     raise exception 'El pedido no tiene productos';
   end if;
 
-  if p_payment_method not in ('efectivo', 'transferencia', 'mercadopago') then
+  if p_payment_method not in ('transferencia', 'mercadopago') then
     raise exception 'Método de pago inválido';
   end if;
 

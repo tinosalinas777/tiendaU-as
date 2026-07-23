@@ -13,7 +13,7 @@ export default function Checkout() {
     phone: "",
     address: "",
     notes: "",
-    payment: "efectivo",
+    payment: "transferencia",
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -109,7 +109,7 @@ export default function Checkout() {
         return;
       }
 
-      // Pago en efectivo o transferencia: confirmamos por WhatsApp.
+      // Pago por transferencia: confirmamos por WhatsApp.
       const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${buildWhatsappMessage(orderId, amounts)}`;
       clearCart();
       window.open(waUrl, "_blank");
@@ -207,8 +207,7 @@ export default function Checkout() {
               onChange={handleChange}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-400"
             >
-              <option value="efectivo">Efectivo al recibir</option>
-              <option value="transferencia">Transferencia</option>
+              <option value="transferencia">Transferencia bancaria</option>
               <option value="mercadopago">
                 Mercado Pago (tarjeta, débito o dinero en cuenta)
               </option>
