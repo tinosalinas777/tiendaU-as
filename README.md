@@ -72,10 +72,10 @@ Las políticas ya incluidas dejan:
    - (y las de Mercado Pago si lo vas a usar, ver sección 7)
 5. Deploy. El archivo `vercel.json` ya incluido asegura que las rutas de React Router
    (por ej. `/tienda`, `/producto/1`) funcionen bien al recargar la página.
-6. **Dominio propio**: una vez que tengas tu dominio conectado en Vercel, actualizá
-   las URLs `https://TU-DOMINIO.com` en `index.html`, `public/robots.txt` y
-   `public/sitemap.xml` (ver sección 6) — con eso queda resuelto el SEO y la
-   vista previa de WhatsApp.
+6. **Dominio**: el sitio ya está configurado con `https://tiendabella.vercel.app`
+   en `index.html`, `public/robots.txt` y `public/sitemap.xml` (ver sección 6).
+   Si en algún momento conectás un dominio propio en Vercel, buscá y reemplazá
+   `tiendabella.vercel.app` por el nuevo dominio en esos 3 archivos.
 
 ## Estructura del proyecto
 
@@ -139,19 +139,27 @@ realmente vino de Mercado Pago antes de procesarla.
 - `public/robots.txt` y `public/sitemap.xml` para que Google indexe el sitio
   correctamente.
 
-**Lo único que tenés que hacer vos** es reemplazar `https://TU-DOMINIO.com` por tu
-dominio real en esos tres archivos (`index.html`, `robots.txt`, `sitemap.xml`) una
-vez que tengas el dominio definitivo conectado en Vercel. Mientras el sitio use la
-URL temporal de Vercel (`algo.vercel.app`) el sitio funciona igual, pero conviene
-un dominio propio para SEO.
+El dominio ya está configurado como `https://tiendabella.vercel.app` en esos
+tres archivos (`index.html`, `robots.txt`, `sitemap.xml`). Si en algún momento
+conectás un dominio propio en Vercel, reemplazá `tiendabella.vercel.app` por
+el nuevo dominio en esos mismos archivos — con eso queda resuelto el SEO y la
+vista previa de WhatsApp otra vez.
 
 > ⚠️ Importante sobre `og:image`: tiene que ser una URL absoluta (empezar con
 > `https://`) para que WhatsApp la pueda descargar. `public/og-image.jpg` ya
-> es tu foto real del hero (1200x630, generada a partir de `hero.avif`) —
-> solo falta reemplazar `TU-DOMINIO.com` por tu dominio final en `index.html`.
+> es tu foto real del hero (1200x630, generada a partir de `hero.avif`).
 > Si en algún momento cambiás la foto del hero, volvé a generar esta versión
 > JPG de 1200x630 (los rastreadores de WhatsApp/Facebook no siempre leen bien
 > AVIF todavía, por eso esta imagen puntual se guarda aparte en JPG).
+>
+> Si cambiaste algo de esto y la vista previa de WhatsApp te sigue sin
+> aparecer, probablemente sea WhatsApp mostrando una versión vieja en caché
+> del link: probá primero en el
+> [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/)
+> pegando tu URL y usando "Scrape Again" para forzarlo a releer los tags
+> actuales, y después probá compartir el link en un chat nuevo (a un chat
+> donde ya lo compartiste antes, WhatsApp a veces le sigue mostrando la
+> vista previa vieja).
 
 Para probar cómo se ve la vista previa antes de compartirlo de verdad, podés usar
 el [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/) (WhatsApp

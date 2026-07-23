@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin
 
-Sitemap: https://TU-DOMINIO.com/sitemap.xml
+Sitemap: https://tiendabella.vercel.app/sitemap.xml
