@@ -151,13 +151,21 @@ vista previa de WhatsApp otra vez.
 > **Si Facebook Sharing Debugger muestra bien la vista previa pero en WhatsApp
 > igual no aparece:** revisá el "Código de respuesta" que muestra el debugger.
 > Si dice **206** (contenido parcial) en vez de 200, es un problema conocido
-> de Vercel: por default sirve respuestas parciales cuando un bot pide solo
-> un rango de bytes, y el rastreador de WhatsApp (a diferencia del de
-> Facebook) no arma la vista previa con una respuesta 206. El `vercel.json`
-> de este proyecto ya incluye una cabecera (`Accept-Ranges: none`) que
-> fuerza siempre una respuesta completa (200) y soluciona esto — si de
-> todos modos te sigue pasando, probá compartiendo la URL con un parámetro
-> nuevo al final (ej. `?v=2`) para evitar la caché vieja de WhatsApp.
+> de Vercel: por default sirve respuestas parciales cuando una petición trae
+> un header `Range`, y el rastreador de WhatsApp (a diferencia del de
+> Facebook, que es más tolerante) no arma la vista previa con una respuesta
+> 206 aunque el contenido esté completo.
+>
+> Este proyecto ya incluye `middleware.js` en la raíz, que le saca el header
+> `Range` a cualquier petición ANTES de que llegue a la capa de archivos
+> estáticos de Vercel — así siempre se responde 200 completo, nunca 206.
+> Es una [Routing Middleware de Vercel](https://vercel.com/docs/routing-middleware),
+> corre sola al deployar, no requiere configuración extra de tu parte.
+>
+> Si después de deployar esto seguís sin ver la vista previa, probá
+> compartiendo la URL con un parámetro nuevo al final (ej. `?v=2`, `?v=3`...)
+> para asegurarte de que no sea la caché vieja de WhatsApp de un intento
+> anterior a este arreglo.
 
 Para probar cómo se ve la vista previa antes de compartirlo de verdad, podés usar
 el [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/) (WhatsApp
