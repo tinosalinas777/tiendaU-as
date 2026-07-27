@@ -4,12 +4,14 @@ import { fetchProductById, fetchProductReviews, submitProductReview } from '../l
 import { isSupabaseConfigured } from '../lib/supabaseClient'
 import { useCart } from '../context/CartContext'
 import StarRatingInput from '../components/StarRatingInput'
+import ProductGallery from '../components/ProductGallery'
 
 export default function ProductDetail() {
   const { id } = useParams()
   const [product, setProduct] = useState(null)
   const [qty, setQty] = useState(1)
   const [added, setAdded] = useState(false)
+  const [activeImage, setActiveImage] = useState(0)
   const { addItem } = useCart()
 
   const [reviews, setReviews] = useState([])
@@ -19,7 +21,11 @@ export default function ProductDetail() {
   const [reviewError, setReviewError] = useState('')
   const [reviewSent, setReviewSent] = useState(false)
 
-  const loadProduct = () => fetchProductById(id).then(setProduct)
+  const loadProduct = () =>
+    fetchProductById(id).then((p) => {
+      setProduct(p)
+      setActiveImage(0)
+    })
 
   const loadReviews = () => {
     setLoadingReviews(true)
@@ -86,13 +92,7 @@ export default function ProductDetail() {
       </Link>
 
       <div className="mt-6 grid md:grid-cols-2 gap-10">
-        <div className="aspect-square bg-slate-50 rounded-2xl grid place-items-center text-8xl overflow-hidden">
-          {product.image_url ? (
-            <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
-          ) : (
-            product.icon || '🛒'
-          )}
-        </div>
+        <ProductGallery product={product} activeImage={activeImage} onSelect={setActiveImage} />
 
         <div>
           <h1 className="font-display font-800 text-2xl text-navy">{product.name}</h1>

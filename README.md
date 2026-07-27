@@ -171,12 +171,23 @@ Para probar cómo se ve la vista previa antes de compartirlo de verdad, podés u
 el [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/) (WhatsApp
 usa el mismo sistema de Open Graph) pegando la URL de tu tienda.
 
-## 7. Fotos de productos
+## 7. Fotos de productos (galería de varias fotos)
 
-Desde `/admin/productos` podés subir una foto real para cada producto (además
-del emoji, que queda como respaldo si el producto no tiene foto todavía). Las
-imágenes se guardan en **Supabase Storage**, en un bucket público de solo
-lectura llamado `product-images`.
+Desde `/admin/productos` podés subir **hasta 6 fotos por producto** (además
+del emoji, que queda como respaldo si el producto no tiene ninguna foto
+todavía). Las imágenes se guardan en **Supabase Storage**, en un bucket
+público de solo lectura llamado `product-images`.
+
+- La primera foto de la lista es la **portada**: es la que se ve en el
+  listado de la tienda y en las tarjetas de producto. Pasando el mouse
+  sobre cualquier otra foto podés marcarla como portada (⭐) o sacarla (✕).
+- En la ficha del producto (`/producto/:id`), el cliente ve todas las fotos
+  como una galería: miniaturas al costado (abajo en el celular) y al
+  tocar una, se muestra grande. Si el producto tiene una sola foto o
+  ninguna, se ve igual que antes.
+- Los productos cargados antes de esta función (con una sola foto en
+  `image_url`) siguen funcionando sin tocar nada — se muestran como una
+  galería de una sola foto.
 
 Ese bucket y sus permisos ya se crean solos al correr `supabase/schema.sql`
 (sección "Storage: fotos de productos"). Si por algún motivo no se creó,
@@ -184,12 +195,13 @@ podés armarlo a mano:
 
 1. **Storage** → **New bucket** → nombre `product-images`, marcalo como **Public**.
 2. Volvé a correr `supabase/schema.sql` completo para que se apliquen las
-   políticas (solo los admins pueden subir/borrar, cualquiera puede ver).
+   políticas (solo los admins pueden subir/borrar, cualquiera puede ver) y
+   se agregue la columna `images` a la tabla `products` si todavía no existía.
 
 Formatos aceptados: jpg, jfif, png, webp, heic y otros formatos de imagen
-comunes. Tamaño máximo del archivo original: 8MB.
+comunes. Tamaño máximo por archivo original: 8MB.
 
-**Optimización automática:** antes de subir la foto, el navegador la
+**Optimización automática:** antes de subir cada foto, el navegador la
 redimensiona (máximo 1400x1400px) y la convierte a WebP con calidad 82%
 —así una foto de varios MB sacada con el celular termina pesando algunos
 cientos de KB, sin que tengas que convertir nada a mano.

@@ -34,7 +34,8 @@ create table if not exists products (
   stock integer not null default 0,
   min_stock integer not null default 5,   -- debajo de este número, se marca "stock bajo"
   icon text,                              -- emoji o url de imagen
-  image_url text,                         -- si suben foto real a Supabase Storage
+  image_url text,                         -- portada (se mantiene en sync con images[0])
+  images jsonb not null default '[]'::jsonb, -- galería: array de URLs, la primera es la portada
   badge text,                             -- ej: 'Oferta', '2x1'
   rating numeric(2,1) default 0,
   reviews integer default 0,
@@ -51,6 +52,7 @@ create index if not exists idx_products_supplier on products(supplier_id);
 -- columnas nuevas sin pisar nada de lo que ya tenías cargado.
 alter table products add column if not exists supplier_id bigint references suppliers(id) on delete set null;
 alter table products add column if not exists min_stock integer not null default 5;
+alter table products add column if not exists images jsonb not null default '[]'::jsonb;
 
 -- 4) Pedidos
 create table if not exists orders (

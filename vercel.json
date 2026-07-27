@@ -1,8 +1,13 @@
 {
   "rewrites": [
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ],
+  "headers": [
     {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "headers": [
+        { "key": "Accept-Ranges", "value": "none" }
+      ]
     }
   ]
 }
