@@ -11,7 +11,13 @@ export default function Checkout() {
   const [form, setForm] = useState({
     name: "",
     phone: "",
-    address: "",
+    email: "",
+    dni: "",
+    postalCode: "",
+    street: "",
+    streetNumber: "",
+    floor: "",
+    apartment: "",
     notes: "",
     payment: "transferencia",
   });
@@ -21,15 +27,31 @@ export default function Checkout() {
   const handleChange = (e) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
+  // Andreani pide la dirección partida (calle, número, piso, depto), pero
+  // para el mensaje de WhatsApp y como texto de referencia armamos una
+  // sola línea legible.
+  const buildAddressLine = () =>
+    [
+      form.street && form.streetNumber
+        ? `${form.street} ${form.streetNumber}`
+        : form.street,
+      form.floor ? `Piso ${form.floor}` : null,
+      form.apartment ? `Depto ${form.apartment}` : null,
+    ]
+      .filter(Boolean)
+      .join(", ");
+
   const buildWhatsappMessage = (orderId, amounts) => {
     const lines = items.map((i) => `• ${i.qty} x ${i.name}`);
     const { subtotal: sub, shipping: ship, total: tot } = amounts;
     return encodeURIComponent(
       `Hola! Quiero confirmar mi pedido${orderId ? ` #${orderId}` : ""}:\n\n${lines.join("\n")}\n\nSubtotal: $ ${sub.toLocaleString(
         "es-AR",
-      )}\nEnvío: $ ${ship.toLocaleString("es-AR")}\nTotal: $ ${tot.toLocaleString("es-AR")}\n\nNombre: ${form.name}\nDirección: ${
-        form.address
-      }\nPago: ${form.payment}${form.notes ? `\nNotas: ${form.notes}` : ""}`,
+      )}\nEnvío: $ ${ship.toLocaleString("es-AR")}\nTotal: $ ${tot.toLocaleString("es-AR")}\n\nNombre: ${form.name}\nDNI: ${
+        form.dni
+      }\nDirección: ${buildAddressLine()}\nCP: ${form.postalCode}\nEmail: ${form.email}\nTeléfono: ${form.phone}\nPago: ${
+        form.payment
+      }${form.notes ? `\nNotas: ${form.notes}` : ""}`,
     );
   };
 
@@ -52,10 +74,17 @@ export default function Checkout() {
         const { data, error: rpcError } = await supabase.rpc("create_order", {
           p_customer_name: form.name,
           p_customer_phone: form.phone,
-          p_delivery_address: form.address,
+          p_delivery_address: buildAddressLine(),
           p_notes: form.notes,
           p_payment_method: form.payment,
           p_items: items.map((i) => ({ product_id: i.id, quantity: i.qty })),
+          p_customer_dni: form.dni,
+          p_customer_email: form.email,
+          p_postal_code: form.postalCode,
+          p_street: form.street,
+          p_street_number: form.streetNumber,
+          p_floor: form.floor,
+          p_apartment: form.apartment,
         });
 
         if (rpcError) throw rpcError;
@@ -160,38 +189,150 @@ export default function Checkout() {
               className="w-full border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-400"
             />
           </div>
-          <div>
-            <label
-              htmlFor="phone"
-              className="block text-sm font-medium text-slate-700 mb-1"
-            >
-              Teléfono
-            </label>
-            <input
-              id="phone"
-              name="phone"
-              required
-              value={form.phone}
-              onChange={handleChange}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-400"
-            />
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label
+                htmlFor="phone"
+                className="block text-sm font-medium text-slate-700 mb-1"
+              >
+                Teléfono
+              </label>
+              <input
+                id="phone"
+                name="phone"
+                required
+                value={form.phone}
+                onChange={handleChange}
+                className="w-full border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-400"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-slate-700 mb-1"
+              >
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                value={form.email}
+                onChange={handleChange}
+                className="w-full border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-400"
+              />
+            </div>
           </div>
+
           <div>
             <label
-              htmlFor="address"
+              htmlFor="dni"
               className="block text-sm font-medium text-slate-700 mb-1"
             >
-              Dirección de entrega
+              DNI
             </label>
             <input
-              id="address"
-              name="address"
+              id="dni"
+              name="dni"
               required
-              value={form.address}
+              inputMode="numeric"
+              pattern="[0-9]{7,8}"
+              title="DNI sin puntos, 7 u 8 dígitos"
+              placeholder="Sin puntos, ej: 30123456"
+              value={form.dni}
               onChange={handleChange}
-              placeholder="Calle, número, piso/depto, referencia"
               className="w-full border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-400"
             />
+            <p className="text-xs text-slate-400 mt-1">
+              Lo pide Andreani para generar el envío.
+            </p>
+          </div>
+
+          <p className="text-sm font-medium text-slate-700 -mb-2">
+            Dirección de entrega
+          </p>
+          <div className="grid sm:grid-cols-[1fr_140px] gap-4">
+            <div>
+              <label
+                htmlFor="street"
+                className="block text-sm font-medium text-slate-700 mb-1"
+              >
+                Calle
+              </label>
+              <input
+                id="street"
+                name="street"
+                required
+                value={form.street}
+                onChange={handleChange}
+                className="w-full border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-400"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="streetNumber"
+                className="block text-sm font-medium text-slate-700 mb-1"
+              >
+                Número
+              </label>
+              <input
+                id="streetNumber"
+                name="streetNumber"
+                required
+                value={form.streetNumber}
+                onChange={handleChange}
+                className="w-full border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-400"
+              />
+            </div>
+          </div>
+          <div className="grid sm:grid-cols-3 gap-4">
+            <div>
+              <label
+                htmlFor="floor"
+                className="block text-sm font-medium text-slate-700 mb-1"
+              >
+                Piso (opcional)
+              </label>
+              <input
+                id="floor"
+                name="floor"
+                value={form.floor}
+                onChange={handleChange}
+                className="w-full border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-400"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="apartment"
+                className="block text-sm font-medium text-slate-700 mb-1"
+              >
+                Depto (opcional)
+              </label>
+              <input
+                id="apartment"
+                name="apartment"
+                value={form.apartment}
+                onChange={handleChange}
+                className="w-full border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-400"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="postalCode"
+                className="block text-sm font-medium text-slate-700 mb-1"
+              >
+                Código postal
+              </label>
+              <input
+                id="postalCode"
+                name="postalCode"
+                required
+                value={form.postalCode}
+                onChange={handleChange}
+                className="w-full border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-400"
+              />
+            </div>
           </div>
           <div>
             <label

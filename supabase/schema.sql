@@ -54,6 +54,16 @@ alter table products add column if not exists supplier_id bigint references supp
 alter table products add column if not exists min_stock integer not null default 5;
 alter table products add column if not exists images jsonb not null default '[]'::jsonb;
 
+-- Migración: si la tabla orders ya existía de antes (sin los datos para
+-- Andreani), esto agrega las columnas nuevas sin tocar los pedidos ya cargados.
+alter table orders add column if not exists customer_dni text;
+alter table orders add column if not exists customer_email text;
+alter table orders add column if not exists postal_code text;
+alter table orders add column if not exists street text;
+alter table orders add column if not exists street_number text;
+alter table orders add column if not exists floor text;
+alter table orders add column if not exists apartment text;
+
 -- 4) Pedidos
 create table if not exists orders (
   id bigint generated always as identity primary key,
@@ -61,6 +71,16 @@ create table if not exists orders (
   customer_phone text not null,
   delivery_address text not null,
   notes text,
+  -- Datos que pide Andreani para generar el envío (además de nombre y
+  -- teléfono, que ya estaban). delivery_address se sigue guardando
+  -- armado a partir de estos campos, para no romper nada que ya lo lea.
+  customer_dni text,
+  customer_email text,
+  postal_code text,
+  street text,
+  street_number text,
+  floor text,
+  apartment text,
   payment_method text not null default 'transferencia', -- transferencia | mercadopago
   payment_status text not null default 'no_aplica', -- no_aplica | pendiente | aprobado | rechazado
   mp_payment_id text,
@@ -289,13 +309,28 @@ grant execute on function adjust_stock(bigint, integer, text, text, bigint) to a
 -- puede pagar un pedido a un precio inventado. También descuenta el
 -- stock vendido automáticamente.
 -- =========================================================
+-- Si ya tenías la versión vieja de la función (6 parámetros, sin los
+-- datos de Andreani), hay que borrarla: al agregar parámetros nuevos,
+-- Postgres la trataría como una función DISTINTA (quedarían las dos
+-- conviviendo) en vez de reemplazarla.
+drop function if exists create_order(text, text, text, text, text, jsonb);
+
 create or replace function create_order(
   p_customer_name text,
   p_customer_phone text,
   p_delivery_address text,
   p_notes text,
   p_payment_method text,
-  p_items jsonb  -- [{"product_id": 1, "quantity": 2}, ...]
+  p_items jsonb,  -- [{"product_id": 1, "quantity": 2}, ...]
+  -- Datos para Andreani. Se reciben sueltos (no solo texto libre) para
+  -- poder exportarlos después tal cual el formulario de Andreani los pide.
+  p_customer_dni text default null,
+  p_customer_email text default null,
+  p_postal_code text default null,
+  p_street text default null,
+  p_street_number text default null,
+  p_floor text default null,
+  p_apartment text default null
 )
 returns jsonb
 language plpgsql
@@ -313,8 +348,12 @@ declare
   -- Mismas reglas de envío que en el frontend (CartContext), pero acá
   -- son la fuente de verdad real: si las cambiás, cambialas en los dos
   -- lugares para que la UI muestre lo mismo que se termina cobrando.
-  v_free_shipping_threshold numeric(10,2) := 15000;
-  v_delivery_fee numeric(10,2) := 1200;
+  -- $10.000 es el costo real cotizado en Andreani para un paquete
+  -- 20x20x20cm / 1kg. El umbral de envío gratis se calculó para que el
+  -- margen promedio del pedido (~35% sobre el precio de venta, según la
+  -- lista de precios de la distribuidora) alcance a cubrir ese costo.
+  v_free_shipping_threshold numeric(10,2) := 45000;
+  v_delivery_fee numeric(10,2) := 10000;
 begin
   if p_items is null or jsonb_array_length(p_items) = 0 then
     raise exception 'El pedido no tiene productos';
@@ -329,12 +368,19 @@ begin
     raise exception 'Faltan datos del cliente';
   end if;
 
+  if coalesce(trim(p_customer_dni), '') = '' or coalesce(trim(p_postal_code), '') = ''
+     or coalesce(trim(p_street), '') = '' or coalesce(trim(p_street_number), '') = '' then
+    raise exception 'Faltan datos para el envío (DNI, código postal, calle o número)';
+  end if;
+
   insert into orders (
     customer_name, customer_phone, delivery_address, notes, payment_method,
+    customer_dni, customer_email, postal_code, street, street_number, floor, apartment,
     subtotal, shipping, total, status, payment_status
   )
   values (
     p_customer_name, p_customer_phone, p_delivery_address, p_notes, p_payment_method,
+    p_customer_dni, p_customer_email, p_postal_code, p_street, p_street_number, p_floor, p_apartment,
     0, 0, 0, 'pendiente',
     case when p_payment_method = 'mercadopago' then 'pendiente' else 'no_aplica' end
   )
@@ -388,7 +434,9 @@ $$;
 -- NO pueden insertar directamente en las tablas (no hay policy de insert
 -- para ellos). security definer hace que la función corra con permisos
 -- para escribir igual, ya validados los datos adentro.
-grant execute on function create_order(text, text, text, text, text, jsonb) to anon, authenticated;
+grant execute on function create_order(
+  text, text, text, text, text, jsonb, text, text, text, text, text, text, text
+) to anon, authenticated;
 
 -- =========================================================
 -- Storage: fotos de productos

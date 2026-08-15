@@ -43,8 +43,19 @@ export function CartProvider({ children }) {
   const itemCount = useMemo(() => items.reduce((sum, i) => sum + i.qty, 0), [items])
 
   // Envío gratis a partir de cierto monto; si no, costo fijo de envío.
-  const FREE_SHIPPING_THRESHOLD = 15000
-  const DELIVERY_FEE = 1200
+  // DELIVERY_FEE = costo real cotizado en Andreani para un paquete
+  // 20x20x20cm / 1kg (agosto 2026).
+  // FREE_SHIPPING_THRESHOLD: se calculó con la lista de precios de la
+  // distribuidora — el margen promedio entre precio de venta sugerido y
+  // precio de costo ronda el 35%. Para que ese margen alcance a cubrir
+  // el envío de $10.000, el pedido necesita ser de al menos ~$28.500
+  // (10000 / 0.35). Se dejó en $45.000 (~2-3 productos a precio
+  // promedio) para tener margen de sobra y no solo empatar.
+  // IMPORTANTE: estos dos valores deben coincidir siempre con
+  // v_free_shipping_threshold y v_delivery_fee en supabase/schema.sql
+  // (función create_order), que es la fuente de verdad real del cobro.
+  const FREE_SHIPPING_THRESHOLD = 45000
+  const DELIVERY_FEE = 10000
   const shipping = items.length === 0 ? 0 : subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : DELIVERY_FEE
   const total = subtotal + shipping
 

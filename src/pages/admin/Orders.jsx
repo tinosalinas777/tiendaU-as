@@ -151,6 +151,40 @@ export default function AdminOrders() {
                           {o.customer_phone}
                         </p>
                       </div>
+                      {o.customer_email && (
+                        <div>
+                          <p className="text-slate-500">Email</p>
+                          <p className="text-navy font-medium">
+                            {o.customer_email}
+                          </p>
+                        </div>
+                      )}
+                      {o.customer_dni && (
+                        <div>
+                          <p className="text-slate-500">DNI</p>
+                          <p className="text-navy font-medium">{o.customer_dni}</p>
+                        </div>
+                      )}
+                      {o.postal_code && (
+                        <div>
+                          <p className="text-slate-500">Código postal</p>
+                          <p className="text-navy font-medium">
+                            {o.postal_code}
+                          </p>
+                        </div>
+                      )}
+                      {o.street && (
+                        <div className="sm:col-span-2">
+                          <p className="text-slate-500">
+                            Dirección (para Andreani)
+                          </p>
+                          <p className="text-navy font-medium">
+                            {o.street} {o.street_number}
+                            {o.floor ? `, Piso ${o.floor}` : ""}
+                            {o.apartment ? `, Depto ${o.apartment}` : ""}
+                          </p>
+                        </div>
+                      )}
                       <div>
                         <p className="text-slate-500">Pago</p>
                         <p className="text-navy font-medium capitalize">
